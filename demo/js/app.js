@@ -241,7 +241,7 @@ dataStore.init(function(initialCircuit) {
     });
   }
 
-  setInterval(mainLoop, 5000);
+  setInterval(mainLoop, 500);
 });
 
 
