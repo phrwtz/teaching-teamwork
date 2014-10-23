@@ -1,0 +1,16 @@
+{
+  "name": "breadboard",
+  "main": [
+    "public/js/app.js",
+    "public/css/app.css"
+  ],
+  "_release": "f6d9055939",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "f6d9055939524fa3c024710031e72fdc6ea98e82"
+  },
+  "_source": "file:///Users/sfentress/projects/breadboard/.git/",
+  "_target": "*",
+  "_originalSource": "file:///Users/sfentress/projects/breadboard/.git/"
+}

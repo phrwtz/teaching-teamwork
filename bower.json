@@ -1,0 +1,7 @@
+{
+  "name": "teaching-teamwork",
+  "version": "0.0.1",
+  "dependencies": {
+    "breadboard": "file:///Users/sfentress/projects/breadboard/.git/"
+  }
+}

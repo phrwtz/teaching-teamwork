@@ -1,0 +1,156 @@
+{
+    "demo": {
+      "initialCircuit": {
+        "a": {
+          "show_multimeter": "true",
+           "allow_move_yellow_probe": "true",
+           "circuit": [
+               {
+                   "type": "resistor",
+                   "UID": "r1",
+                   "resistance": "100",
+                   "connections": "c13,c20",
+                   "label": "R1"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a30,a20"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a1,a13"
+               },
+               {
+                   "type": "wire",
+                   "connections": "j22,g17"
+               }
+           ],
+          "showComponentDrawer": true
+        },
+        "b": {
+          "show_multimeter": "true",
+           "allow_move_yellow_probe": "true",
+           "circuit": [
+               {
+                   "type": "resistor",
+                   "UID": "r1",
+                   "resistance": "100",
+                   "connections": "c13,c20",
+                   "label": "R2"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a30,a20"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a1,a13"
+               },
+               {
+                   "type": "wire",
+                   "connections": "j22,g17"
+               }
+           ],
+          "showComponentDrawer": true
+        },
+        "c": {
+          "show_multimeter": "true",
+           "allow_move_yellow_probe": "true",
+           "circuit": [
+               {
+                   "type": "resistor",
+                   "UID": "r1",
+                   "resistance": "100",
+                   "connections": "c13,c20",
+                   "label": "R3"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a30,a20"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a1,a13"
+               }
+           ],
+          "showComponentDrawer": true
+        }
+      },
+      "currentCircuit": {
+        "a": {
+          "show_multimeter": "true",
+           "allow_move_yellow_probe": "true",
+           "circuit": [
+               {
+                   "type": "resistor",
+                   "UID": "r1",
+                   "resistance": "100",
+                   "connections": "c13,c20",
+                   "label": "R1"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a30,a20"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a1,a13"
+               },
+               {
+                   "type": "wire",
+                   "connections": "j22,g17"
+               }
+           ],
+          "showComponentDrawer": true
+        },
+        "b": {
+          "show_multimeter": "true",
+           "allow_move_yellow_probe": "true",
+           "circuit": [
+               {
+                   "type": "resistor",
+                   "UID": "r1",
+                   "resistance": "100",
+                   "connections": "c13,c20",
+                   "label": "R2"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a30,a20"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a1,a13"
+               },
+               {
+                   "type": "wire",
+                   "connections": "j22,g17"
+               }
+           ],
+          "showComponentDrawer": true
+        },
+        "c": {
+          "show_multimeter": "true",
+           "allow_move_yellow_probe": "true",
+           "circuit": [
+               {
+                   "type": "resistor",
+                   "UID": "r1",
+                   "resistance": "100",
+                   "connections": "c13,c20",
+                   "label": "R3"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a30,a20"
+               },
+               {
+                   "type": "wire",
+                   "connections": "a1,a13"
+               }
+           ],
+          "showComponentDrawer": true
+        }
+      }
+    }
+  }
