@@ -1,10 +1,12 @@
 var fb = new Firebase('https://teaching-teamwork.firebaseio.com/demo/chat');
 
 function sendChat(message) {
+  log.logEvent("Sent message", message, {circuit: circuitName});
   fb.push({user: circuitName, message: message, val: "x"});
 }
 
 function sendValue(val, units) {
+  log.logEvent("Sent value", val+" "+units, {circuit: circuitName, value: val, units: units});
   fb.push({user: circuitName, message: val+" "+units, val: val, units: units});
 }
 

@@ -1,3 +1,8 @@
+window.activityName = "Demo board 1A";
+window.username = window.prompt("What is your name?","");
+
+log.startSession();
+
 var circuitName;
 while (circuitName !== "a" && circuitName !== "b" && circuitName !== "c") {
   if(window.location.hash) {
@@ -6,6 +11,8 @@ while (circuitName !== "a" && circuitName !== "b" && circuitName !== "c") {
     circuitName = window.prompt("Which board are you (a, b or c)?","").toLowerCase();
   }
 }
+
+log.logEvent("Selected circuit", circuitName, {circuit: circuitName});
 
 var stale = false;
 
@@ -219,6 +226,12 @@ dataStore.init(function(initialCircuit) {
   var res = initialCircuit.circuit[0].resistance;
   dataStore.lastVal = res;
 
+  var lastRedConnection = null,
+      lastBlackConnection = null,
+      lastReading = "  0.0 0",
+      lastDialPosition = "dcv_20",
+      dmm = sparks.workbenchController.workbench.meter.dmm;
+
   $(".add_components").hide();
 
   mainLoop = function() {
@@ -230,6 +243,7 @@ dataStore.init(function(initialCircuit) {
       for (board in ret) {
         res = 1 * ret[board].circuit[0].resistance;
         if (res !== getBreadBoard().components[board+"r1"].resistance) {
+          log.logEvent("Received circuit modification", null, {circuit: circuitName, fromCircuit: board, component: "R1", newValue: res});
           changed = true;
           getBreadBoard().components[board+"r1"].resistance = res;
         }
@@ -239,6 +253,30 @@ dataStore.init(function(initialCircuit) {
         setStale();
       }
     });
+
+    if (dmm.redProbeConnection !== lastRedConnection) {
+      log.logEvent("Moved DMM probe", dmm.redProbeConnection, {circuit: circuitName, probe: "red"});
+    }
+    if (dmm.blackProbeConnection !== lastBlackConnection) {
+      log.logEvent("Moved DMM probe", dmm.blackProbeConnection, {circuit: circuitName, probe: "black"});
+    }
+    if (dmm.dialPosition !== lastDialPosition) {
+      log.logEvent("Moved DMM dial", dmm.dialPosition, {circuit: circuitName});
+    }
+    if (dmm.displayText !== lastReading && dmm.redProbeConnection && dmm.blackProbeConnection) {
+      var value = dmm.displayText.replace(/\s/g, '') + " " + dmm.currentUnits;
+      log.logEvent("DMM updated", value, {circuit: circuitName,
+        redProbeLocation: dmm.redProbeConnection,
+        blackProbeLocation: dmm.blackProbeConnection,
+        display: dmm.displayText,
+        value: dmm.currentValue,
+        units: dmm.currentUnits
+      });
+    }
+    lastRedConnection = dmm.redProbeConnection;
+    lastBlackConnection = dmm.blackProbeConnection;
+    lastReading = dmm.displayText;
+    lastDialPosition = dmm.dialPosition;
   }
 
   setInterval(mainLoop, 500);
