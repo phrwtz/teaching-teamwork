@@ -1,4 +1,4 @@
-window.activityName = "Demo board 1A";
+window.activityName = "Demo board 2";
 window.username = window.prompt("What is your name?","");
 
 log.startSession();
