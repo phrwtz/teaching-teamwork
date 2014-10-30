@@ -54,7 +54,7 @@ DataStore.prototype = {
   setResistorValue: function(val) {
     if (val !== this.lastVal) {
       setStale();
-      log.logEvent("Modified circuit", {circuit: circuitName, component: "R1", newValue: val});
+      log.logEvent("Modified circuit", null, {circuit: circuitName, component: "R1", newValue: val});
       this.fbRefs.res.update({resistance: val});
       this.lastVal = val;
     }
