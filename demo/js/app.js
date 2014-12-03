@@ -26,9 +26,9 @@ $("#circuit-number").text(circuitName.toUpperCase());
 var dataStore = new DataStore(circuitName);
 
 dataStore.init(function(initialCircuit) {
-  sparks.workbenchController.createWorkbench(initialCircuit, "breadboard-wrapper");
+  sparks.createWorkbench(initialCircuit, "breadboard-wrapper");
 
-  sparks.breadboardView.removeComponent("r1")
+  sparks.removeComponent("r1")
   getBreadBoard().components = {};
 
   if (circuitName == "a") {
