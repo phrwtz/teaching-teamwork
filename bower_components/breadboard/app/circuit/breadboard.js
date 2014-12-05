@@ -8,6 +8,19 @@
 
 (function () {
 
+    var util                  = require('../helpers/util'),
+        Battery               = require('./battery'),
+        Capacitor             = require('./capacitor'),
+        FunctionGenerator     = require('./function-generator'),
+        Inductor              = require('./inductor'),
+        PowerLead             = require('./power-lead'),
+        Resistor4band         = require('./resistor-4band'),
+        Resistor              = require('./resistor'),
+        VariableResistor      = require('./variable-resistor'),
+        Component             = require('./component'),
+        Wire                  = require('./wire'),
+        workbenchController;
+
     ////////////////////////////////////////////////////////////////////////////////
     //// GLOBAL DEFAULTS ///////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -142,30 +155,30 @@
           // FIXME refactor this repetitive code
 
           if (props.kind === "resistor"){
-            return new sparks.circuit.Resistor(props, breadBoard);
+            return new Resistor(props, breadBoard);
           }
           if (props.kind === "variable resistor"){
-            return new sparks.circuit.VariableResistor(props, breadBoard);
+            return new VariableResistor(props, breadBoard);
           }
           if (props.kind === 'inductor') {
-            return new sparks.circuit.Inductor(props, breadBoard);
+            return new Inductor(props, breadBoard);
           }
           if (props.kind === 'capacitor') {
-            return new sparks.circuit.Capacitor(props, breadBoard);
+            return new Capacitor(props, breadBoard);
           }
           if (props.kind === 'battery') {
-            return new sparks.circuit.Battery(props, breadBoard);
+            return new Battery(props, breadBoard);
           }
           if (props.kind === 'function generator') {
-            return new sparks.circuit.FunctionGenerator(props, breadBoard);
+            return new FunctionGenerator(props, breadBoard);
           }
           if (props.kind === 'wire') {
-            return new sparks.circuit.Wire(props, breadBoard);
+            return new Wire(props, breadBoard);
           }
           if (props.kind === 'powerLead') {
-            return new sparks.circuit.PowerLead(props, breadBoard);
+            return new PowerLead(props, breadBoard);
           }
-          return new sparks.circuit.Component(props, breadBoard);
+          return new Component(props, breadBoard);
         }
       };
 
@@ -249,13 +262,13 @@
           // apply fault to valid components 'count' times, with no repitition. No checking is
           // done to see if there are sufficient valid components for this to be possible, so
           // application will hang if authored badly.
-          var componentKeys = sparks.util.getKeys(this.components);
+          var componentKeys = util.getKeys(this.components);
           for (var i = 0; i < count; i++){
             var randomComponent = null;
             while (randomComponent === null) {
               var rand = Math.floor(Math.random() * componentKeys.length);
               var component = this.components[componentKeys[rand]];
-              if (!!component.applyFaults && (sparks.util.contains(this.faultyComponents, component) === -1)){
+              if (!!component.applyFaults && (util.contains(this.faultyComponents, component) === -1)){
                 randomComponent = component;
               }
             }
@@ -325,9 +338,11 @@
           var newComponent = breadBoard.component(props);
 
           // update view
-          if (sparks.breadboardView) {
-            if (newComponent.getViewArguments && newComponent.hasValidConnections() && newComponent.kind !== "battery")
-              sparks.breadboardView.addComponent(newComponent.getViewArguments());
+          if (workbenchController.breadboardView) {
+            if (newComponent.getViewArguments && newComponent.hasValidConnections() && newComponent.kind !== "battery" && !newComponent.hide)
+              workbenchController.breadboardView.addComponent(newComponent.getViewArguments());
+            if (newComponent.kind == "battery" || newComponent.kind == "function generator" && !newComponent.hide) // FIXME
+              workbenchController.breadboardView.addBattery("left_negative21,left_positive21");
           }
 
           return newComponent.UID;
@@ -343,22 +358,6 @@
             interfaces.insertComponent(spec.type, spec);
           });
 
-          // check if there is any power source, if not, add a battery
-          if (!breadBoard.components.source) {
-            var battery = {
-              UID: "source",
-              type: "battery",
-              voltage: 9
-            };
-            interfaces.insertComponent("battery", battery);
-          }
-
-          // add default power leads
-          interfaces.insertComponent("powerLead", {
-            UID: "redPowerLead",
-            type: "powerLead",
-            connections: "left_positive21"
-          });
           interfaces.insertComponent("powerLead", {
             UID: "blackPowerLead",
             type: "powerLead",
@@ -434,9 +433,9 @@
           }
 
           // update view
-          if (leadsWereTooClose && sparks.breadboardView) {
-            sparks.breadboardView.removeComponent(comp.UID);
-            sparks.breadboardView.addComponent(comp.getViewArguments());
+          if (leadsWereTooClose && workbenchController.breadboardView) {
+            workbenchController.breadboardView.removeComponent(comp.UID);
+            workbenchController.breadboardView.addComponent(comp.getViewArguments());
           }
 
         },
@@ -458,13 +457,13 @@
           if (!!comp){
             comp.destroy();
           }
-          sparks.breadboardView.removeComponent(uid);
+          workbenchController.breadboardView.removeComponent(uid);
         },
         removeComponent: function(comp){
           var uid = comp.UID;
           comp.destroy();
           if (uid) {
-            sparks.breadboardView.removeComponent(uid);
+            workbenchController.breadboardView.removeComponent(uid);
           }
         },
         findComponent: function(type, connections){
@@ -513,7 +512,7 @@
         },
         addRandomResistor: function(name, location, options){
           console.log("WARNING: addRandomResistor is deprecated");
-          var resistor = new sparks.circuit.Resistor4band(name);
+          var resistor = new Resistor4band(name);
           resistor.randomize((options | null));
           interfaces.insert('resistor', location, resistor.getRealValue(), name, resistor.colors);
           return resistor;
@@ -590,15 +589,21 @@
         },
         updateView: function() {
           $.each(breadBoard.components, function(i, component) {
-            if (component.getViewArguments && component.hasValidConnections() && component.kind !== "battery") {
-              sparks.breadboardView.addComponent(component.getViewArguments());
+            if (component.getViewArguments && component.hasValidConnections() && component.kind !== "battery" && !component.hide) {
+              workbenchController.breadboardView.addComponent(component.getViewArguments());
             }
+            if (component.kind == "battery" || component.kind == "function generator" && !component.hide) // FIXME
+              workbenchController.breadboardView.addBattery("left_negative21,left_positive21");
           });
         }
       };
 
       // The inward interface between Flash's ExternalInterface and JavaScript's BreadBoard prototype model instance
       this.breadModel = function () {
+        if (!workbenchController) {
+          workbenchController = require('../controllers/workbench-controller');   // grrr
+        }
+
         var newArgs = [];
         for(var i=1,l=arguments.length;i< l;i++){
           newArgs[newArgs.length] = arguments[i];
