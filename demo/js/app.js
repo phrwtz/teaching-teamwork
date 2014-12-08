@@ -140,10 +140,6 @@ dataStore.init(function(initialCircuit) {
          "connections": "a1,a13"
       },
       {
-        "type" : "wire",
-        "connections" : "f24,off_9"
-      },
-      {
          "type": "wire",
          "connections": "j22,g17"
       },

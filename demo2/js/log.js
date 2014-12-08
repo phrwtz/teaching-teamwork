@@ -28,7 +28,7 @@ log.logEvent = function(eventName, value, parameters) {
     activity: activityName,
     username: username,
     session: session,
-    time: Date.now(),
+    time: (Date.now()/1000),
     event: eventName,
     event_value: value,
     parameters: parameters
