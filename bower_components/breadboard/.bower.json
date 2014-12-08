@@ -4,11 +4,11 @@
     "public/js/app.js",
     "public/css/app.css"
   ],
-  "_release": "415cd381b5",
+  "_release": "0eba347622",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "415cd381b540321861f7589d8183db9c74ef0baf"
+    "commit": "0eba3476221ef8521ad4b38d7959dfeece23cc61"
   },
   "_source": "C:\\xampp\\htdocs\\breadboard\\.git",
   "_target": "*",
