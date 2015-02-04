@@ -1,8 +1,0 @@
-{
-  "name": "breadboard",
-  "version": "0.0.1",
-  "main": [
-    "public/js/app.js",
-    "public/css/app.css"
-  ]
-}
