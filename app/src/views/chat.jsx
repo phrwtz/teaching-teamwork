@@ -1,7 +1,7 @@
 require('./goalTable.jsx');
 
-var userController = require('../controllers/user'),
-    logController = require('./log');
+var userController  = require('../controllers/user'),
+    logController   = require('../controllers/log');
 
 module.exports = ChatView = React.createClass({
   getInitialState: function() {
