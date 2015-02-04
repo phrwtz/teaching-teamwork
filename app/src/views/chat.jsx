@@ -1,6 +1,7 @@
 require('./goalTable.jsx');
 
-var userController = require('../controllers/user');
+var userController = require('../controllers/user'),
+    logController = require('./log');
 
 module.exports = ChatView = React.createClass({
   getInitialState: function() {
@@ -32,7 +33,7 @@ module.exports = ChatView = React.createClass({
       user: userController.getUsername(),
       message: this.state.text
     });
-    log.logEvent("Sent message", this.state.text);
+    logController.logEvent("Sent message", this.state.text);
     this.setState({text: ""});
   },
   handleSendVal: function(e) {
@@ -46,7 +47,7 @@ module.exports = ChatView = React.createClass({
       val: val,
       units: units
     });
-    log.logEvent("Sent value", val+" "+units);
+    logController.logEvent("Sent value", val+" "+units);
   },
   render: function() {
 
