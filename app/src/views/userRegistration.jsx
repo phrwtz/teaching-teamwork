@@ -14,7 +14,7 @@ module.exports = UserRegistrationView = React.createClass({
         $('#user-registration')[0].style.opacity = 1;},
       100);
 
-      return React.renderComponent(
+      return React.render(
         <UserRegistrationView {...data} />,
         $anchor.get(0)
       );

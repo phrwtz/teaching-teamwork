@@ -11,8 +11,17 @@ function startActivity(activityName, ttWorkbench) {
   var workbenchAdaptor, workbenchFBConnector;
 
   logController.init(activityName);
+  React.render(
+    <PageView name={ ttWorkbench.name }/>,
+    document.getElementById('content')
+  );
 
   userController.init(ttWorkbench.clients.length, function(clientNumber) {
+    React.render(
+      <PageView name={ ttWorkbench.name } circuit={ (1 * clientNumber)+1 }/>,
+      document.getElementById('content')
+    );
+
     logController.setClientNumber(clientNumber);
     workbenchAdaptor = new WorkbenchAdaptor(clientNumber)
     workbenchFBConnector = new WorkbenchFBConnector(userController, clientNumber, workbenchAdaptor);
