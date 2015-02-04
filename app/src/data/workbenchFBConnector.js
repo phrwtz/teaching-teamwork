@@ -26,6 +26,9 @@ function addClientListener(client) {
 
 
 function WorkbenchFBConnector(_userController, _clientNumber, _wa) {
+  if (!_userController.getFirebaseGroupRef()) {
+    return;
+  }
   userController = _userController;
   clientNumber = _clientNumber;
   clientListFirebaseRef = userController.getFirebaseGroupRef().child('clients');

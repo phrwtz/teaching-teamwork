@@ -101,7 +101,7 @@ WorkbenchAdaptor.prototype = {
     if (!comp.type) {
       throw new Error("Component is missing a type");
     }
-    if (!comp.connections) {
+    if (!comp.connections && !(comp.UID == "source")) {
       throw new Error("Component is missing connections");
     }
   },
