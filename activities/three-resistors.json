@@ -8,6 +8,7 @@
       5.3
     ]
   },
+  "image": "images/three-resistors-circuit.png",
   "externalComponents": [
     {
       "type": "battery",
