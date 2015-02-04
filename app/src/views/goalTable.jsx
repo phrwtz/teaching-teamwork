@@ -1,28 +1,22 @@
 module.exports = GoalTable = React.createClass({
   render: function() {
+    var rows = this.props.goal.map(function(val, i) {
+      return (<tr>
+                <td>{ i+1 }</td>
+                <td>{ val }</td>
+                <td className="actual"></td>
+              </tr>
+              );
+    });
     return (
       <div id="values">
         <table>
           <tr>
             <th></th>
-            <th>Goal (V)</th>
+            <th>Goal ({ this.props.measurement })</th>
             <th>Actual</th>
           </tr>
-          <tr>
-            <td>A</td>
-            <td>8.56</td>
-            <td id="a-actual" className="actual"></td>
-          </tr>
-          <tr>
-            <td>B</td>
-            <td>5.55</td>
-            <td id="b-actual" className="actual"></td>
-          </tr>
-          <tr>
-            <td>C</td>
-            <td>5.3</td>
-            <td id="c-actual" className="actual"></td>
-          </tr>
+          { rows }
         </table>
       </div>
     );

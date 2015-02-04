@@ -1,5 +1,7 @@
 require('./goalTable.jsx');
 
+var userController = require('../controllers/user');
+
 module.exports = ChatView = React.createClass({
   getInitialState: function() {
     this.items = [];
@@ -27,12 +29,34 @@ module.exports = ChatView = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     this.firebaseRef.push({
-      user: window.username,
+      user: userController.getUsername(),
       message: this.state.text
     });
+    log.logEvent("Sent message", this.state.text);
     this.setState({text: ""});
   },
+  handleSendVal: function(e) {
+    e.preventDefault();
+    var val   = sparks.workbenchController.workbench.meter.dmm.currentValue,
+      units = sparks.workbenchController.workbench.meter.dmm.currentUnits || "V";
+
+    this.firebaseRef.push({
+      user: userController.getUsername(),
+      message: val+" "+units,
+      val: val,
+      units: units
+    });
+    log.logEvent("Sent value", val+" "+units);
+  },
   render: function() {
+
+    var table = null,
+        sendMeas = null;
+
+    if (this.props.simpleMeasurementGame) {
+      table = <GoalTable {...this.props.simpleMeasurementGame}/>
+      sendMeas = <button id="send-val" onClick={ this.handleSendVal }>Send measurement</button>
+    }
 
     return (
       <div id="chat">
@@ -41,9 +65,12 @@ module.exports = ChatView = React.createClass({
             return <div className='chat'><b>{ item.user }:</b> { item.message }</div>
           })}
         </div>
-        <GoalTable />
+        { table }
         <div id="input">
-          Send chat: <input onChange={ this.onChange } value={ this.state.text }type="text" size="70" id="send-chat" /><button id="send" onClick={ this.handleSubmit }>Send</button><button id="send-val">Send measurement</button>
+          Send chat:
+            <input onChange={ this.onChange } value={ this.state.text }type="text" size="70" id="send-chat" />
+            <button id="send" onClick={ this.handleSubmit }>Send</button>
+            { sendMeas }
         </div>
       </div>
     );

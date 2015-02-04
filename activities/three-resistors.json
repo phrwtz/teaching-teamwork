@@ -1,5 +1,13 @@
 {
   "name": "Three Resistors",
+  "simpleMeasurementGame": {
+    "measurement": "V",
+    "goal": [
+      8.56,
+      5.55,
+      5.3
+    ]
+  },
   "externalComponents": [
     {
       "type": "battery",

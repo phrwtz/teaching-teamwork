@@ -12,13 +12,13 @@ function startActivity(activityName, ttWorkbench) {
 
   logController.init(activityName);
   React.render(
-    <PageView name={ ttWorkbench.name }/>,
+    <PageView activity={ ttWorkbench } />,
     document.getElementById('content')
   );
 
   userController.init(ttWorkbench.clients.length, function(clientNumber) {
     React.render(
-      <PageView name={ ttWorkbench.name } circuit={ (1 * clientNumber)+1 }/>,
+      <PageView activity={ ttWorkbench } circuit={ (1 * clientNumber)+1 }/>,
       document.getElementById('content')
     );
 

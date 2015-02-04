@@ -121,6 +121,10 @@ module.exports = {
     callback(client);
   },
 
+  getUsername: function() {
+    return userName;
+  },
+
   getFirebaseGroupRef: function() {
     return firebaseGroupRef;
   },
