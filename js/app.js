@@ -418,7 +418,7 @@ WorkbenchAdaptor.prototype = {
     if (!comp.type) {
       throw new Error("Component is missing a type");
     }
-    if (!comp.connections) {
+    if (!comp.connections && !(comp.UID == "source")) {
       throw new Error("Component is missing connections");
     }
   },
@@ -503,6 +503,9 @@ function addClientListener(client) {
 
 
 function WorkbenchFBConnector(_userController, _clientNumber, _wa) {
+  if (!_userController.getFirebaseGroupRef()) {
+    return;
+  }
   userController = _userController;
   clientNumber = _clientNumber;
   clientListFirebaseRef = userController.getFirebaseGroupRef().child('clients');
@@ -518,7 +521,8 @@ module.exports = WorkbenchFBConnector;
 },{}],7:[function(require,module,exports){
 require('./goalTable.jsx');
 
-var userController = require('../controllers/user');
+var userController  = require('../controllers/user'),
+    logController   = require('../controllers/log');
 
 module.exports = ChatView = React.createClass({displayName: "ChatView",
   getInitialState: function() {
@@ -550,7 +554,7 @@ module.exports = ChatView = React.createClass({displayName: "ChatView",
       user: userController.getUsername(),
       message: this.state.text
     });
-    log.logEvent("Sent message", this.state.text);
+    logController.logEvent("Sent message", this.state.text);
     this.setState({text: ""});
   },
   handleSendVal: function(e) {
@@ -564,7 +568,7 @@ module.exports = ChatView = React.createClass({displayName: "ChatView",
       val: val,
       units: units
     });
-    log.logEvent("Sent value", val+" "+units);
+    logController.logEvent("Sent value", val+" "+units);
   },
   render: function() {
 
@@ -596,7 +600,7 @@ module.exports = ChatView = React.createClass({displayName: "ChatView",
 });
 
 
-},{"../controllers/user":4,"./goalTable.jsx":8}],8:[function(require,module,exports){
+},{"../controllers/log":3,"../controllers/user":4,"./goalTable.jsx":8}],8:[function(require,module,exports){
 module.exports = GoalTable = React.createClass({displayName: "GoalTable",
   render: function() {
     var rows = this.props.goal.map(function(val, i) {
@@ -626,14 +630,21 @@ module.exports = GoalTable = React.createClass({displayName: "GoalTable",
 },{}],9:[function(require,module,exports){
 require('./chat.jsx');
 
+var config = require('../config');
+
 module.exports = PageView = React.createClass({displayName: "PageView",
   render: function() {
     var title,
-        activity = this.props.activity ? this.props.activity : {}
+        activity = this.props.activity ? this.props.activity : {},
+        image = null;
     if (activity.name) {
       title = React.createElement("h1", null, "Teaching Teamwork: ",  activity.name)
     } else {
       title = React.createElement("h1", null, "Teaching Teamwork")
+    }
+
+    if (activity.image) {
+      image = React.createElement("img", {src:  config.modelsBase + activity.image})
     }
     return (
       React.createElement("div", {className: "tt-page"}, 
@@ -641,14 +652,14 @@ module.exports = PageView = React.createClass({displayName: "PageView",
         React.createElement("h2", null, "Circuit ",  this.props.circuit), 
         React.createElement("div", {id: "breadboard-wrapper"}), 
         React.createElement(ChatView, React.__spread({},  activity)), 
-        React.createElement("div", {id: "image-wrapper"}, React.createElement("img", {src: "circuit.png"}))
+        React.createElement("div", {id: "image-wrapper"}, image )
       )
     );
   }
 });
 
 
-},{"./chat.jsx":7}],10:[function(require,module,exports){
+},{"../config":2,"./chat.jsx":7}],10:[function(require,module,exports){
 var userController;
 
 module.exports = UserRegistrationView = React.createClass({displayName: "UserRegistrationView",
