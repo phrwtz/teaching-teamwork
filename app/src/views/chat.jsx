@@ -9,17 +9,16 @@ module.exports = ChatView = React.createClass({
     return {items: [], text: ""};
   },
   componentWillMount: function() {
-    var fbUrl = 'https://teaching-teamwork.firebaseio.com';
-    fbUrl += "/dev";
-    // fbUrl += "/demo";
-
-    this.firebaseRef = new Firebase(fbUrl+"/chat/");
-    this.firebaseRef.on("child_added", function(dataSnapshot) {
-      this.items.push(dataSnapshot.val());
-      this.setState({
-        items: this.items
-      });
-    }.bind(this));
+    var self = this;
+    userController.onGroupRefCreation(function() {
+      self.firebaseRef = userController.getFirebaseGroupRef().child("chat");
+      self.firebaseRef.on("child_added", function(dataSnapshot) {
+        self.items.push(dataSnapshot.val());
+        self.setState({
+          items: self.items
+        });
+      }.bind(self));
+    });
   },
   componentWillUnmount: function() {
     this.firebaseRef.off();

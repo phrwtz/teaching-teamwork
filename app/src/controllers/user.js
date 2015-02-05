@@ -9,6 +9,7 @@ var logController = require('./log'),
     fbUrl,
     groupUsersListener,
     boardsSelectionListener,
+    groupRefCreationListeners,
     client,
     callback;
 
@@ -30,6 +31,14 @@ var getDate = function() {
   }
 
   return yyyy+'-'+mm+'-'+dd;
+}
+
+var notifyGroupRefCreation = function() {
+  if (groupRefCreationListeners) {
+    for (var i = 0, ii = groupRefCreationListeners.length; i < ii; i++) {
+      groupRefCreationListeners.pop()();
+    }
+  }
 }
 
 
@@ -101,6 +110,8 @@ module.exports = {
 
     logController.setGroupName(groupName);
 
+    notifyGroupRefCreation();
+
     // annoyingly we have to get out of this before the off() call is finalized
     setTimeout(function(){
       boardsSelectionListener = firebaseUsersRef.on("value", function(snapshot) {
@@ -135,6 +146,16 @@ module.exports = {
       if (i !== client) ret.push(i);
     }
     return ret;
-  }
+  },
 
+  onGroupRefCreation: function(callback) {
+    if (firebaseGroupRef) {
+      callback();
+    } else {
+      if (!groupRefCreationListeners) {
+        groupRefCreationListeners = [];
+      }
+      groupRefCreationListeners.push(callback);
+    }
+  }
 }
