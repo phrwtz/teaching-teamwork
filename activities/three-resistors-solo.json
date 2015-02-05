@@ -4,7 +4,7 @@
   ],
   "clients": [
     {
-      "showComponentEditor": true,
+      "showComponentEditor": "false",
       "show_multimeter": "true",
       "allow_move_yellow_probe": "true",
       "circuit": [
