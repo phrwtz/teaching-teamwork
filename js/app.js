@@ -28,6 +28,8 @@ function startActivity(activityName, ttWorkbench) {
     workbenchFBConnector = new WorkbenchFBConnector(userController, clientNumber, workbenchAdaptor);
     workbench = workbenchAdaptor.processTTWorkbench(ttWorkbench);
     sparks.createWorkbench(workbench, "breadboard-wrapper");
+
+    logController.startListeningToCircuitEvents();
   });
 
 }
@@ -125,7 +127,7 @@ var logManagerUrl = 'http://teaching-teamwork-log-manager.herokuapp.com/api/logs
         parameters: parameters
       }
 
-      if (!client) {
+      if (typeof client == "undefined") {
         queue.push(data);
       } else {
         sendEvent(data);
@@ -165,6 +167,12 @@ LogController.prototype = {
     backfillQueue("board", client);
     processQueue();
     logEvent("Selected board", client);
+  },
+
+  startListeningToCircuitEvents: function() {
+    sparks.logController.addListener(function(evt) {
+      logEvent(evt.name, null, evt.value);
+    });
   }
 };
 
@@ -183,6 +191,7 @@ var logController = require('./log'),
     fbUrl,
     groupUsersListener,
     boardsSelectionListener,
+    groupRefCreationListeners,
     client,
     callback;
 
@@ -204,6 +213,14 @@ var getDate = function() {
   }
 
   return yyyy+'-'+mm+'-'+dd;
+}
+
+var notifyGroupRefCreation = function() {
+  if (groupRefCreationListeners) {
+    for (var i = 0, ii = groupRefCreationListeners.length; i < ii; i++) {
+      groupRefCreationListeners.pop()();
+    }
+  }
 }
 
 
@@ -275,6 +292,8 @@ module.exports = {
 
     logController.setGroupName(groupName);
 
+    notifyGroupRefCreation();
+
     // annoyingly we have to get out of this before the off() call is finalized
     setTimeout(function(){
       boardsSelectionListener = firebaseUsersRef.on("value", function(snapshot) {
@@ -309,8 +328,18 @@ module.exports = {
       if (i !== client) ret.push(i);
     }
     return ret;
-  }
+  },
 
+  onGroupRefCreation: function(callback) {
+    if (firebaseGroupRef) {
+      callback();
+    } else {
+      if (!groupRefCreationListeners) {
+        groupRefCreationListeners = [];
+      }
+      groupRefCreationListeners.push(callback);
+    }
+  }
 }
 
 
@@ -521,6 +550,8 @@ module.exports = WorkbenchFBConnector;
 },{}],7:[function(require,module,exports){
 require('./goalTable.jsx');
 
+var ReactTransitionGroup = React.addons.TransitionGroup;
+
 var userController  = require('../controllers/user'),
     logController   = require('../controllers/log');
 
@@ -530,17 +561,16 @@ module.exports = ChatView = React.createClass({displayName: "ChatView",
     return {items: [], text: ""};
   },
   componentWillMount: function() {
-    var fbUrl = 'https://teaching-teamwork.firebaseio.com';
-    fbUrl += "/dev";
-    // fbUrl += "/demo";
-
-    this.firebaseRef = new Firebase(fbUrl+"/chat/");
-    this.firebaseRef.on("child_added", function(dataSnapshot) {
-      this.items.push(dataSnapshot.val());
-      this.setState({
-        items: this.items
-      });
-    }.bind(this));
+    var self = this;
+    userController.onGroupRefCreation(function() {
+      self.firebaseRef = userController.getFirebaseGroupRef().child("chat");
+      self.firebaseRef.on("child_added", function(dataSnapshot) {
+        self.items.push(dataSnapshot.val());
+        self.setState({
+          items: self.items
+        });
+      }.bind(self));
+    });
   },
   componentWillUnmount: function() {
     this.firebaseRef.off();
@@ -580,19 +610,34 @@ module.exports = ChatView = React.createClass({displayName: "ChatView",
       sendMeas = React.createElement("button", {id: "send-val", onClick:  this.handleSendVal}, "Send measurement")
     }
 
+    var Message = React.createClass({displayName: "Message",
+      componentDidEnter: function() {
+        $('#messages').stop().animate({
+          scrollTop: $("#messages")[0].scrollHeight
+        }, 800);
+      },
+      render: function() {
+        return React.createElement("div", {key:  this.props.i, className: "chat"}, React.createElement("b", null,  this.props.item.user, ":"), " ",  this.props.item.message)
+      }
+    });
+
     return (
       React.createElement("div", {id: "chat"}, 
         React.createElement("div", {id: "messages"}, 
-          this.state.items.map(function(item) {
-            return React.createElement("div", {className: "chat"}, React.createElement("b", null,  item.user, ":"), " ",  item.message)
-          })
+          React.createElement(ReactTransitionGroup, null, 
+            this.state.items.map(function(item, i) {
+              return React.createElement(Message, {i: i, item: item })
+            })
+          )
         ), 
         table, 
         React.createElement("div", {id: "input"}, 
-          "Send chat:", 
-            React.createElement("input", {onChange:  this.onChange, value:  this.state.text, type: "text", size: "70", id: "send-chat"}), 
-            React.createElement("button", {id: "send", onClick:  this.handleSubmit}, "Send"), 
-            sendMeas 
+          React.createElement("form", {onSubmit:  this.handleSubmit}, 
+            "Send chat:", 
+              React.createElement("input", {onChange:  this.onChange, value:  this.state.text, type: "text", size: "70", id: "send-chat"}), 
+              React.createElement("button", {id: "send", onClick:  this.handleSubmit}, "Send"), 
+              sendMeas 
+          )
         )
       )
     );
@@ -636,7 +681,8 @@ module.exports = PageView = React.createClass({displayName: "PageView",
   render: function() {
     var title,
         activity = this.props.activity ? this.props.activity : {},
-        image = null;
+        image = null,
+        chat = null;
     if (activity.name) {
       title = React.createElement("h1", null, "Teaching Teamwork: ",  activity.name)
     } else {
@@ -646,12 +692,16 @@ module.exports = PageView = React.createClass({displayName: "PageView",
     if (activity.image) {
       image = React.createElement("img", {src:  config.modelsBase + activity.image})
     }
+
+    if (activity.clients && activity.clients.length > 1) {
+      chat = React.createElement(ChatView, React.__spread({},  activity))
+    }
     return (
       React.createElement("div", {className: "tt-page"}, 
         title, 
         React.createElement("h2", null, "Circuit ",  this.props.circuit), 
         React.createElement("div", {id: "breadboard-wrapper"}), 
-        React.createElement(ChatView, React.__spread({},  activity)), 
+        chat, 
         React.createElement("div", {id: "image-wrapper"}, image )
       )
     );
