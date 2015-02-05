@@ -27,6 +27,8 @@ function startActivity(activityName, ttWorkbench) {
     workbenchFBConnector = new WorkbenchFBConnector(userController, clientNumber, workbenchAdaptor);
     workbench = workbenchAdaptor.processTTWorkbench(ttWorkbench);
     sparks.createWorkbench(workbench, "breadboard-wrapper");
+
+    logController.startListeningToCircuitEvents();
   });
 
 }

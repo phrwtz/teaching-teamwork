@@ -46,7 +46,7 @@ var logManagerUrl = 'http://teaching-teamwork-log-manager.herokuapp.com/api/logs
         parameters: parameters
       }
 
-      if (!client) {
+      if (typeof client == "undefined") {
         queue.push(data);
       } else {
         sendEvent(data);
@@ -86,6 +86,12 @@ LogController.prototype = {
     backfillQueue("board", client);
     processQueue();
     logEvent("Selected board", client);
+  },
+
+  startListeningToCircuitEvents: function() {
+    sparks.logController.addListener(function(evt) {
+      logEvent(evt.name, null, evt.value);
+    });
   }
 };
 
