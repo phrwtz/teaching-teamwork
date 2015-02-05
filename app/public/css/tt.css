@@ -130,3 +130,7 @@ form .error {
 form button:disabled {
   background-color: #CCC;
 }
+
+#chat form input[type="text"] {
+  width: 65%;
+}

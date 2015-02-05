@@ -67,10 +67,12 @@ module.exports = ChatView = React.createClass({
         </div>
         { table }
         <div id="input">
-          Send chat:
-            <input onChange={ this.onChange } value={ this.state.text }type="text" size="70" id="send-chat" />
-            <button id="send" onClick={ this.handleSubmit }>Send</button>
-            { sendMeas }
+          <form onSubmit={ this.handleSubmit }>
+            Send chat:
+              <input onChange={ this.onChange } value={ this.state.text }type="text" size="70" id="send-chat" />
+              <button id="send" onClick={ this.handleSubmit }>Send</button>
+              { sendMeas }
+          </form>
         </div>
       </div>
     );
