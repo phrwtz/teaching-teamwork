@@ -1,5 +1,7 @@
 require('./goalTable.jsx');
 
+var ReactTransitionGroup = React.addons.TransitionGroup;
+
 var userController  = require('../controllers/user'),
     logController   = require('../controllers/log');
 
@@ -58,12 +60,25 @@ module.exports = ChatView = React.createClass({
       sendMeas = <button id="send-val" onClick={ this.handleSendVal }>Send measurement</button>
     }
 
+    var Message = React.createClass({
+      componentDidEnter: function() {
+        $('#messages').stop().animate({
+          scrollTop: $("#messages")[0].scrollHeight
+        }, 800);
+      },
+      render: function() {
+        return <div key={ this.props.i } className='chat'><b>{ this.props.item.user }:</b> { this.props.item.message }</div>
+      }
+    });
+
     return (
       <div id="chat">
         <div id="messages">
-          {this.state.items.map(function(item) {
-            return <div className='chat'><b>{ item.user }:</b> { item.message }</div>
-          })}
+          <ReactTransitionGroup>
+            {this.state.items.map(function(item, i) {
+              return <Message i={ i } item={ item } />
+            })}
+          </ReactTransitionGroup>
         </div>
         { table }
         <div id="input">
