@@ -1,0 +1,42 @@
+{
+  "name": "Circuit with internal battery",
+  "externalComponents": [
+
+
+  ],
+  "clients": [
+    {
+      "show_multimeter": true,
+      "showComponentEditor": true,
+      "showComponentDrawer": true,
+      "circuit": [
+        {
+          "type": "battery",
+          "UID": "source",
+          "voltage": 12,
+          "connections": "left_positive21,left_negative21"
+        },
+
+        {
+          "type": "wire",
+          "connections": "a15,left_positive5",
+          "draggable": false
+        },
+        {
+          "type": "wire",
+          "connections": "b15,c21",
+          "draggable": "true"
+        },
+        {
+          "type": "resistor",
+          "UID": "r1",
+          "label": "R1",
+          "resistance": "100",
+          "connections": "d21,d27",
+          "hidden": false,
+          "draggable": true
+        }
+      ]
+    }
+  ]
+}
